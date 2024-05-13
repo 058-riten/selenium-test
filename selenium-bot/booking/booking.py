@@ -1,5 +1,3 @@
-from types import TracebackType
-from typing import Type
 from selenium import webdriver
 import os
 from selenium.webdriver.common.by import By
@@ -24,22 +22,27 @@ class Booking(webdriver.Firefox):
     def land_first_page(self):
         self.get(const.BASE_URL)
         try:
-            element = WebDriverWait(self, 5).until(EC.presence_of_element_located((By.CSS_SELECTOR, 'button[aria-label="Dismiss sign-in info."]')))
+            element = WebDriverWait(self, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, 'button[aria-label="Dismiss sign-in info."]')))
             element.click()
             
         except TimeoutException:
             print("Element with the specified namespace not found within the timeout period.")
 
-    # def change_currency(self, currency = None):
-    #     wait = WebDriverWait(self, 10)
-    #     currency_element = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, '[data-testid="header-currency-picker-trigger"]')))
-    #     currency_element.click()
-    #     selected_currency_element = WebDriverWait(self, 10).until(EC.element_to_be_clickable((By.CSS_SELECTOR, f'div[ea1163d21f*="{currency}"]')))
-    #     selected_currency_element.click()
-
     def select_place_to_go(self, place_to_go):
-        search_field = WebDriverWait(self, 5).until(EC.presence_of_element_located((By.ID, ':re:')))
+        search_field = self.find_element(By.ID, ':re:')
         search_field.clear()
         search_field.send_keys(place_to_go)
-        first_elm = WebDriverWait(self, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, 'li[id="autocomplete-result-0"]')))
+
+        first_elm = self.find_element(By.CSS_SELECTOR, 'li[id="autocomplete-result-0"]')
         first_elm.click()
+    
+    def select_dates(self, check_in_date, check_out_date):
+        check_in_element = self.find_element(By.CSS_SELECTOR, f'span[data-date="{check_in_date}"]')
+        check_in_element.click()
+
+        check_out_element = self.find_element(By.CSS_SELECTOR, f'span[data-date="{check_out_date}"]')
+        check_out_element.click()
+        
+    def click_search(self):
+        search_button = self.find_element(By.CSS_SELECTOR, 'button[type="submit"]')
+        search_button.click()
